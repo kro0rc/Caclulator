@@ -51,6 +51,11 @@ namespace Calculator.UserInteraction
         {
             Console.WriteLine(message);
         }
+
+        public void CleanOutput()
+        {
+            Console.Clear();
+        }
        
     }
 }

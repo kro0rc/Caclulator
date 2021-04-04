@@ -10,5 +10,6 @@ namespace Calculator.UserInteraction
 
         ConsoleKey GetUserKey(string message);
         void ShowResponse(string message);
+        void CleanOutput();
     }
 }

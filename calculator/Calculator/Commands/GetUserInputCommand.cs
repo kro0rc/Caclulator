@@ -17,5 +17,10 @@ namespace Calculator.Commands
         {
             this.UserInput = this._interaction.GetUserInput(MessagesTemplates.GetExpression);
         }
+
+        public void Execute(string message)
+        {
+
+        }
     }
 }

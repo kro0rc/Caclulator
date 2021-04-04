@@ -1,4 +1,5 @@
 ﻿using Calculator.UserInteraction;
+using System.Linq;
 
 namespace Calculator
 {  
@@ -9,13 +10,13 @@ namespace Calculator
         static void Main(string[] args)
         {
             Program program = new Program();
-            program.Init();
+            program.StartProgram(args?.FirstOrDefault());
         }
 
-        public void Init()
+        public void StartProgram(string predefinedPath)
         {
-            this._client = new Client(new ConsoleInteraction());
-            this._client.Start();
+            this._client = new Client(new ConsoleInteraction(), predefinedPath);
+            this._client.Init();
         }
     }
 }

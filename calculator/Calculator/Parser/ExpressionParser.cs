@@ -6,7 +6,6 @@ namespace Calculator.Parser
 {
     public abstract class ExpressionParser
     {
-        public List<string> expressionParts { get; private set; }
         public bool correctStringFormat { get; private set; }
         protected string _numberRegEx = @"^\-?\d+(\.\d{0,})?";
         protected string _operatorRegex = @"^[-+*/]";
@@ -30,10 +29,10 @@ namespace Calculator.Parser
             }
         }
 
-        public void Parse(string expression)
+        public List<string> Parse(string expression)
         {
             
-            this.expressionParts = new List<string>();
+            List <string> expressionParts = new List<string>();
             string modifyedExpression = expression.Replace(" ", "");
 
             while (modifyedExpression.Length != 0)
@@ -43,30 +42,45 @@ namespace Calculator.Parser
 
                 if (number.Success)
                 {
-                    this.expressionParts.Add(number.Value);
+                    expressionParts.Add(number.Value);
                     modifyedExpression = modifyedExpression.Remove(0, number.Value.Length);
                 }
 
                 else if (!number.Success && sign.Success)
                 {
-                    this.expressionParts.Add(sign.Value);
+                    expressionParts.Add(sign.Value);
                     modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
                 }
             }
+
+            return expressionParts;
         }
 
-        private bool CheckExpression(string expression)
+        public bool CheckExpression(string expression)
         {
-            if (expression.Length > this._minExpressionLength || String.IsNullOrWhiteSpace(expression))
+            if (expression.Length < this._minExpressionLength || String.IsNullOrWhiteSpace(expression))
             {
                 return false;
             }
 
-            foreach (var item in expression)
+            else
             {
-                if (Char.IsLetter(item))
+                for (int i = 0; i < expression.Length; i++)
                 {
-                    return false;
+                    if(Char.IsLetter(expression[i]))
+                    {
+                        return false;
+                    }
+
+                    else if (expression.Length - i >= 2)
+                    {
+                        if (expression[i] == '/' && expression[i + 1] == '0')
+                        {
+                            Console.WriteLine("Zero dividing Error");
+                            return false;
+                        }
+                        
+                    }
                 }
             }
 

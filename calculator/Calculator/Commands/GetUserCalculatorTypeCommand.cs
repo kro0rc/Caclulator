@@ -19,12 +19,13 @@ namespace Calculator.Commands
         public GetUserCalculatorTypeCommand(IUserInteraction interaction)
         {
             this._interaction = interaction;
-            this._interaction.ShowResponse(MessagesTemplates.WelocmeMessage);
         }
 
 
         public void Execute()
         {
+            this._interaction.CleanOutput();
+            this._interaction.ShowResponse(MessagesTemplates.WelocmeMessage);
             this._userKey = this._interaction.GetUserKey(MessagesTemplates.RealizationChoose);
 
             if (this._userKey == this._keyToConsoleCalculator)
@@ -39,7 +40,7 @@ namespace Calculator.Commands
             }
             else if (this._userKey == this._keyToCancelOperation)
             {
-
+                
             }
 
         }
