@@ -11,6 +11,8 @@ namespace Calculator
     public class Client
     {
         private string _codeToExit = "exit";
+        private string _mistake = " = mistake in expression";
+        private string _signOfAssignment = " = ";
         private string _pathToFile;
         private IUserInteraction _interaction;
         private IFileHandler _fileHandler;
@@ -82,11 +84,11 @@ namespace Calculator
                 {
                     List<string> parsedexpression = ParseString(expressions[i]);
                     double result = RunCalculator(parsedexpression);
-                    expressions[i] = expressions[i] + " = " + result.ToString();
+                    expressions[i] = expressions[i] + this._signOfAssignment + result.ToString();
                 }
                 else if(!expressionHasCorrectFormat)
                 {
-                    expressions[i] = expressions[i] + " = mistake in expression";
+                    expressions[i] = expressions[i] + this._mistake;
                 }
             }
 

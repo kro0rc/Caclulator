@@ -86,5 +86,12 @@ namespace Calculator.Parser
 
             return true;
         }
+
+
+
+        protected virtual bool CheckBrackets(string expression)
+        {
+            return true;
+        }
     }
 }
