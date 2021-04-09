@@ -5,6 +5,7 @@ using Calculator.CalculationProcessor;
 using Calculator.Parser;
 using Calculator.Commands;
 using Calculator.FileProcessor;
+using System.Globalization;
 
 namespace Calculator
 {
@@ -79,12 +80,27 @@ namespace Calculator
             for (int i = 0; i < expressions.Length; i++)
             {
                 bool expressionHasCorrectFormat = CheckExpression(expressions[i]);
+                string expressionToModify = expressions[i];
 
                 if (expressionHasCorrectFormat)
                 {
-                    List<string> parsedexpression = ParseString(expressions[i]);
-                    double result = RunCalculator(parsedexpression);
-                    expressions[i] = expressions[i] + this._signOfAssignment + result.ToString();
+                    int nestingLevel = GetNestingLevel(expressions[i]);
+
+                    for (int k = 0; k <= nestingLevel; k ++)
+                    {
+                        int currentNestingLevel = nestingLevel - k;
+
+                        if(currentNestingLevel == 0)
+                        {
+                            List<string> parsedexpression = ParseString(expressionToModify);
+                            double result = RunCalculator(parsedexpression);
+                            expressions[i] = expressions[i] + this._signOfAssignment + result.ToString(CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            expressionToModify = SimplifyNesting(expressionToModify, currentNestingLevel);
+                        }
+                    }  
                 }
                 else if(!expressionHasCorrectFormat)
                 {
@@ -94,6 +110,17 @@ namespace Calculator
 
             WriteResultToFile(expressions, this._pathToFile);
         }
+
+        private string SimplifyNesting(string expression, int currentNestringLevel)
+        {
+            int[] indexes = this._parserMode.GetNestedExpressionIndexes(expression, currentNestringLevel);
+            String expressionPart = expression.Substring(indexes[0], indexes[1] - indexes[0] + 1);
+            double result = this._calculatorMode.SimpleCalculating(this.ParseString(this._parserMode.PrepareExpressionPart(expressionPart)));
+
+            return expression.Replace(expressionPart, result.ToString(CultureInfo.InvariantCulture));
+        }
+
+        
 
         private void SetCalcuratorType(GetUserCalculatorTypeCommand command)
         {
@@ -125,9 +152,14 @@ namespace Calculator
             return this._parserMode.CheckExpression(expression);
         }
 
+        private int GetNestingLevel(string expression)
+        {
+            return this._parserMode.GetNestingLevel(expression);
+        }
+
         private List<string> ParseString(string expression)
         {
-            return this._parserMode.Parse(expression);
+            return this._parserMode.ParseSimpleExpression(expression);
         }
 
         private double RunCalculator(List<string> expression)

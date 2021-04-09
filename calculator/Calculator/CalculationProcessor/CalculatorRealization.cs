@@ -17,8 +17,6 @@ namespace Calculator.CalculationProcessor
             { "/", (x, y) => x / y },
         };
 
-        protected virtual void CalculateWithinBrackets(List<string> list) { }
-
         public double SimpleCalculating(List<string> list)
         {
             this.Result = 0;
@@ -64,7 +62,7 @@ namespace Calculator.CalculationProcessor
                 if (this._expression.Count == 1)
                 {
                     calculated = true;
-                    Double.TryParse(this._expression[0], out double res);
+                    Double.TryParse(this._expression[0], NumberStyles.Number, CultureInfo.InvariantCulture, out double res);
                     this.Result = res;
                 }
             }
@@ -79,7 +77,7 @@ namespace Calculator.CalculationProcessor
                 Double.TryParse(this._expression[position - 1], NumberStyles.Number, CultureInfo.InvariantCulture, out double leftOperand);
                 Double.TryParse(this._expression[position + 1], NumberStyles.Number, CultureInfo.InvariantCulture, out double rightOperand);
 
-                this._expression[position] = this._operations[operation](leftOperand, rightOperand).ToString();
+                this._expression[position] = this._operations[operation](leftOperand, rightOperand).ToString(CultureInfo.InvariantCulture);
                 this._expression.RemoveAt(position - 1);
                 this._expression.RemoveAt(position);
             }

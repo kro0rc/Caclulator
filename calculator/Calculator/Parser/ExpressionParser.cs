@@ -7,29 +7,30 @@ namespace Calculator.Parser
     public abstract class ExpressionParser
     {
         public bool correctStringFormat { get; private set; }
-        protected string _numberRegEx = @"^\-?\d+(\.\d{0,})?";
+        protected string _numberWithDotRegex = @"^\-?\d+(\.\d{0,})?";
         protected string _operatorRegex = @"^[-+*/]";
-        protected Regex _numberFinder;
+        protected Regex _numberWithDot;
+        protected Regex _numberWithComma;
         protected Regex _operatorFinder;
         private int _minExpressionLength = 3;
 
         public ExpressionParser()
         {
-            this._numberFinder = new Regex(this._numberRegEx);
+            this._numberWithDot = new Regex(this._numberWithDotRegex);
             this._operatorFinder = new Regex(this._operatorRegex);
         }
 
-        public void CheckAndParse(string expression)
+        public int[] GetNestedExpressionIndexes(string expression, int currentNestingLevel)
         {
-            this.correctStringFormat = CheckExpression(expression);
-            
-            if (correctStringFormat)
-            {
-                Parse(expression);
-            }
+            return this.GetExpressionPartPosition(expression, currentNestingLevel);
         }
 
-        public List<string> Parse(string expression)
+        public string PrepareExpressionPart(string expressionPart)
+        {
+            return this.RemoveBracketsBeforeParing(expressionPart);
+        }
+
+        public List<string> ParseSimpleExpression(string expression)
         {
             
             List <string> expressionParts = new List<string>();
@@ -37,16 +38,16 @@ namespace Calculator.Parser
 
             while (modifyedExpression.Length != 0)
             {
-                Match number = this._numberFinder.Match(modifyedExpression);
+                Match numberWithDot = this._numberWithDot.Match(modifyedExpression);
                 Match sign = this._operatorFinder.Match(modifyedExpression);
 
-                if (number.Success)
+                if (numberWithDot.Success)
                 {
-                    expressionParts.Add(number.Value);
-                    modifyedExpression = modifyedExpression.Remove(0, number.Value.Length);
+                    expressionParts.Add(numberWithDot.Value);
+                    modifyedExpression = modifyedExpression.Remove(0, numberWithDot.Value.Length);
                 }
 
-                else if (!number.Success && sign.Success)
+                else if (!numberWithDot.Success && sign.Success)
                 {
                     expressionParts.Add(sign.Value);
                     modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
@@ -58,6 +59,23 @@ namespace Calculator.Parser
 
         public bool CheckExpression(string expression)
         {
+            bool formatIsChecked = CheckFormat(expression);
+            bool bracketsAreChecked = CheckBrackets(expression);
+
+            if (formatIsChecked && bracketsAreChecked)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        public int GetNestingLevel(string expression)
+        {
+            return CountNestingLevel(expression);
+        }
+
+        private bool CheckFormat(string expression)
+        {
             if (expression.Length < this._minExpressionLength || String.IsNullOrWhiteSpace(expression))
             {
                 return false;
@@ -67,7 +85,7 @@ namespace Calculator.Parser
             {
                 for (int i = 0; i < expression.Length; i++)
                 {
-                    if(Char.IsLetter(expression[i]))
+                    if (Char.IsLetter(expression[i]))
                     {
                         return false;
                     }
@@ -79,7 +97,7 @@ namespace Calculator.Parser
                             Console.WriteLine("Zero dividing Error");
                             return false;
                         }
-                        
+
                     }
                 }
             }
@@ -92,6 +110,21 @@ namespace Calculator.Parser
         protected virtual bool CheckBrackets(string expression)
         {
             return true;
+        }
+
+        protected virtual int CountNestingLevel(string expression)
+        {
+            return 0;
+        }
+
+        protected virtual int[] GetExpressionPartPosition(string expression, int currentNestingLevel)
+        {
+            return new int[] { };
+        }
+
+        protected virtual string RemoveBracketsBeforeParing(string expressionPart)
+        {
+            return expressionPart;
         }
     }
 }
