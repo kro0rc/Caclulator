@@ -60,13 +60,27 @@ namespace Calculator
 
                 if (expressionHasCorrectFormat)
                 {
-                    List<string> parsedexpression = ParseString(userInput);
-                    double result = RunCalculator(parsedexpression);
-                    ShowResponse(new ShowResponseCommand(this._interaction, result.ToString()));
+                    List<string> parsedExpression = RetrieveParsedExpression(userInput);
+                    bool parsedExpressionIsValid = CheckParsedExpression(parsedExpression);
+
+                    if(parsedExpressionIsValid)
+                    {
+                        double result = RunCalculator(parsedExpression);
+                        ShowResponse(new ShowResponseCommand(this._interaction, result.ToString()));
+                    }
+                    else
+                    {
+                        ShowResponse(new ShowResponseCommand(this._interaction, MessagesTemplates.WarnIncorrectInput));
+                    }
+                }
+                else
+                {
+                    ShowResponse(new ShowResponseCommand(this._interaction, MessagesTemplates.WarnIncorrectInput));
                 }
             }
-        }
 
+            StartConsoleProcess();
+        }
 
         private void StartFileProcess()
         {
@@ -80,10 +94,10 @@ namespace Calculator
             for (int i = 0; i < expressions.Length; i++)
             {
                 bool expressionHasCorrectFormat = CheckExpression(expressions[i]);
-                string expressionToModify = expressions[i];
-
+                
                 if (expressionHasCorrectFormat)
                 {
+                    string expressionToModify = expressions[i];
                     int nestingLevel = GetNestingLevel(expressions[i]);
 
                     for (int k = 0; k <= nestingLevel; k ++)
@@ -92,9 +106,18 @@ namespace Calculator
 
                         if(currentNestingLevel == 0)
                         {
-                            List<string> parsedexpression = ParseString(expressionToModify);
-                            double result = RunCalculator(parsedexpression);
-                            expressions[i] = expressions[i] + this._signOfAssignment + result.ToString(CultureInfo.InvariantCulture);
+                            List<string> parsedExpression = RetrieveParsedExpression(expressionToModify);
+                            bool parsedExpressionIsValid = CheckParsedExpression(parsedExpression);
+
+                            if (parsedExpressionIsValid)
+                            {
+                                double result = RunCalculator(parsedExpression);
+                                expressions[i] = expressions[i] + this._signOfAssignment + result.ToString(CultureInfo.InvariantCulture);
+                            }
+                            else
+                            {
+                                expressions[i] = expressions[i] + this._mistake;
+                            }
                         }
                         else
                         {
@@ -119,8 +142,6 @@ namespace Calculator
 
             return expression.Replace(expressionPart, result.ToString(CultureInfo.InvariantCulture));
         }
-
-        
 
         private void SetCalcuratorType(GetUserCalculatorTypeCommand command)
         {
@@ -149,7 +170,33 @@ namespace Calculator
 
         private bool CheckExpression(string expression)
         {
-            return this._parserMode.CheckExpression(expression);
+            return this._parserMode.CheckExpressionBeforeParsing(expression);
+        }
+
+        private bool CheckParsedExpression(List<string> expression)
+        {
+            int numbersCount = 0;
+            int signsCount = 0;
+            List<string> availableOperators = new List<string>() { "-", "+", "*", "/" };
+
+            for (int i = 0; i < expression.Count; i++)
+            {
+                if(Double.TryParse(expression[i], NumberStyles.Number, CultureInfo.InvariantCulture, out double res))
+                {
+                    numbersCount++;
+                }
+                else if(availableOperators.Contains(expression[i]))
+                {
+                    signsCount++;
+                }
+            }
+
+            if (numbersCount == 2 && signsCount > 0 && signsCount <= 3)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private int GetNestingLevel(string expression)
@@ -157,9 +204,9 @@ namespace Calculator
             return this._parserMode.GetNestingLevel(expression);
         }
 
-        private List<string> ParseString(string expression)
+        private List<string> RetrieveParsedExpression(string expression)
         {
-            return this._parserMode.ParseSimpleExpression(expression);
+            return this._parserMode.ParseExpression(expression);
         }
 
         private double RunCalculator(List<string> expression)

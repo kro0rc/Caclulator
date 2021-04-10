@@ -76,7 +76,7 @@ namespace Calculator.Parser
             return new int[] { openingBracketposition, closingBracketPosition };
         }
 
-        protected override string RemoveBracketsBeforeParing(string expressionPart)
+        protected override string RemoveBracketsBeforeParsing(string expressionPart)
         {
             string cleanedExpressionPart = expressionPart;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Calculator.Parser
 {
@@ -13,11 +14,31 @@ namespace Calculator.Parser
         protected Regex _numberWithComma;
         protected Regex _operatorFinder;
         private int _minExpressionLength = 3;
+        private List<string> _availableOperators;
 
         public ExpressionParser()
         {
             this._numberWithDot = new Regex(this._numberWithDotRegex);
             this._operatorFinder = new Regex(this._operatorRegex);
+            this._availableOperators = new List<string>() { "-", "+", "*", "/" };
+        }
+
+        public bool CheckExpressionBeforeParsing(string expression)
+        {
+            bool formatIsChecked = CheckFormat(expression);
+            bool bracketsAreChecked = CheckBrackets(expression);
+
+            if (formatIsChecked && bracketsAreChecked)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public List<string> ParseExpression(string expression)
+        {
+            return this.ParseSimpleExpression(expression);
         }
 
         public int[] GetNestedExpressionIndexes(string expression, int currentNestingLevel)
@@ -27,10 +48,10 @@ namespace Calculator.Parser
 
         public string PrepareExpressionPart(string expressionPart)
         {
-            return this.RemoveBracketsBeforeParing(expressionPart);
+            return this.RemoveBracketsBeforeParsing(expressionPart);
         }
 
-        public List<string> ParseSimpleExpression(string expression)
+        private List<string> ParseSimpleExpression(string expression)
         {
             
             List <string> expressionParts = new List<string>();
@@ -38,7 +59,7 @@ namespace Calculator.Parser
 
             while (modifyedExpression.Length != 0)
             {
-                Match numberWithDot = this._numberWithDot.Match(modifyedExpression);
+                Match numberWithDot = this._numberWithDot.Match(modifyedExpression); 
                 Match sign = this._operatorFinder.Match(modifyedExpression);
 
                 if (numberWithDot.Success)
@@ -57,18 +78,6 @@ namespace Calculator.Parser
             return expressionParts;
         }
 
-        public bool CheckExpression(string expression)
-        {
-            bool formatIsChecked = CheckFormat(expression);
-            bool bracketsAreChecked = CheckBrackets(expression);
-
-            if (formatIsChecked && bracketsAreChecked)
-            {
-                return true;
-            }
-
-            return false;
-        }
         public int GetNestingLevel(string expression)
         {
             return CountNestingLevel(expression);
@@ -105,8 +114,6 @@ namespace Calculator.Parser
             return true;
         }
 
-
-
         protected virtual bool CheckBrackets(string expression)
         {
             return true;
@@ -122,7 +129,7 @@ namespace Calculator.Parser
             return new int[] { };
         }
 
-        protected virtual string RemoveBracketsBeforeParing(string expressionPart)
+        protected virtual string RemoveBracketsBeforeParsing(string expressionPart)
         {
             return expressionPart;
         }
