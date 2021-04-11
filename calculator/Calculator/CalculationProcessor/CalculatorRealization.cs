@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using Calculator.Commands;
 
 namespace Calculator.CalculationProcessor
 {
     public abstract class CalculatorRealization
     {
-        public double Result { get; private set; }
+        public double CalculatingResult { get; private set; }
         private List<string> _expression;
         protected Dictionary<string, Func<double, double, double>> _operations = new Dictionary<string, Func<double, double, double>>
         {
@@ -17,9 +17,9 @@ namespace Calculator.CalculationProcessor
             { "/", (x, y) => x / y },
         };
 
-        public double SimpleCalculating(List<string> list)
+        protected double SimpleCalculating(List<string> list)
         {
-            this.Result = 0;
+            this.CalculatingResult = 0;
             bool calculated = false;
             this._expression = list;
             
@@ -63,7 +63,7 @@ namespace Calculator.CalculationProcessor
                 {
                     calculated = true;
                     Double.TryParse(this._expression[0], NumberStyles.Number, CultureInfo.InvariantCulture, out double res);
-                    this.Result = res;
+                    this.CalculatingResult = res;
                 }
             }
 
@@ -82,7 +82,40 @@ namespace Calculator.CalculationProcessor
                 this._expression.RemoveAt(position);
             }
 
-            return this.Result;
+            return this.CalculatingResult;
+        }
+
+        public abstract void Run();
+
+        protected void ShowResponse(ICommand command) 
+        {
+            command.Execute();
+        }
+
+        protected bool CheckParsedExpression(List<string> expression)
+        {
+            int numbersCount = 0;
+            int signsCount = 0;
+            List<string> availableOperators = new List<string>() { "-", "+", "*", "/" };
+
+            for (int i = 0; i < expression.Count; i++)
+            {
+                if (Double.TryParse(expression[i], NumberStyles.Number, CultureInfo.InvariantCulture, out double res))
+                {
+                    numbersCount++;
+                }
+                else if (availableOperators.Contains(expression[i]))
+                {
+                    signsCount++;
+                }
+            }
+
+            if (numbersCount == 2 && signsCount > 0 && signsCount <= 3)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

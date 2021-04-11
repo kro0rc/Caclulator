@@ -10,6 +10,7 @@ namespace Calculator.UserInteraction
         public const string WelocmeMessage = "Hello! This is calculator.";
         public const string RealizationChoose = "Press Esc to exit\nPress C to procced with console or F to upload file : ";
         public const string GetExpression = "Type \"exit\" to go to main menu \n\nEnter expression to calculate : ";
+        public const string GetPath = "Enter path to file : ";
         public const string WarnEmptyInput = "Input is empty!";
         public const string WarnIncorrectInput = "Incorrect Input!";
         public const string ExitOrRestart = "Press R for restart or Esc to exit...";

@@ -7,6 +7,5 @@ namespace Calculator.Commands
     public interface IGetTypeCommand
     {
         public CalculatorRealization CalculatorType { get; }
-        public ExpressionParser ParserType { get; }
     }
 }
