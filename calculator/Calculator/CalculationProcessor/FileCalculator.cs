@@ -30,7 +30,7 @@ namespace Calculator.CalculationProcessor
         {
             if (String.IsNullOrWhiteSpace(this._pathToFile))
             {
-                this._pathToFile = GetPathToFile(new GetUserPathCommand(this._userInteraction));
+                this._pathToFile = GetPathToFile(new UserPathCommand(this._userInteraction));
             }
 
             string[] expressions = this._fileHandler.GetLinesFromFile(this._pathToFile);
@@ -78,7 +78,7 @@ namespace Calculator.CalculationProcessor
             this._fileHandler.WriteDataToFile(expressions, this._pathToFile);
         }
 
-        private string GetPathToFile(GetUserPathCommand command)
+        private string GetPathToFile(UserPathCommand command)
         {
             command.Execute();
 

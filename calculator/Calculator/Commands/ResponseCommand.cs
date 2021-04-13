@@ -3,12 +3,12 @@ using Calculator.UserInteraction;
 
 namespace Calculator.Commands
 {
-    class ShowResponseCommand : ICommand
+    class ResponseCommand : ICommand
     {
         private IUserInteraction _interaction;
         private readonly string _message;
 
-        public ShowResponseCommand(IUserInteraction interaction, string message)
+        public ResponseCommand(IUserInteraction interaction, string message)
         {
             this._interaction = interaction;
             this._message = message;

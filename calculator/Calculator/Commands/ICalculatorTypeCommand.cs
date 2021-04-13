@@ -4,7 +4,7 @@ using Calculator.Parser;
 
 namespace Calculator.Commands
 {
-    public interface IGetTypeCommand
+    public interface ICalculatorTypeCommand
     {
         public CalculatorRealization CalculatorType { get; }
     }

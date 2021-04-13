@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Calculator.Commands
 {
-    interface IGetDataComand
+    interface IDataComand
     {
         public string UserInput { get; }
     }

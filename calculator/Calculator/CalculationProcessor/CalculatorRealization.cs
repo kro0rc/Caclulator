@@ -67,22 +67,22 @@ namespace Calculator.CalculationProcessor
                 }
             }
 
-            void PerformOperation(string operation, int position)
+            return this.CalculatingResult;
+        }
+
+        protected void PerformOperation(string operation, int position)
+        {
+            if (!_operations.ContainsKey(operation))
             {
-                if (!_operations.ContainsKey(operation))
-                {
-                    throw new ArgumentException(string.Format("Operation {0} is invalid", operation), "op");
-                }
-
-                Double.TryParse(this._expression[position - 1], NumberStyles.Number, CultureInfo.InvariantCulture, out double leftOperand);
-                Double.TryParse(this._expression[position + 1], NumberStyles.Number, CultureInfo.InvariantCulture, out double rightOperand);
-
-                this._expression[position] = this._operations[operation](leftOperand, rightOperand).ToString(CultureInfo.InvariantCulture);
-                this._expression.RemoveAt(position - 1);
-                this._expression.RemoveAt(position);
+                throw new ArgumentException(string.Format("Operation {0} is invalid", operation), "op");
             }
 
-            return this.CalculatingResult;
+            Double.TryParse(this._expression[position - 1], NumberStyles.Number, CultureInfo.InvariantCulture, out double leftOperand);
+            Double.TryParse(this._expression[position + 1], NumberStyles.Number, CultureInfo.InvariantCulture, out double rightOperand);
+
+            this._expression[position] = this._operations[operation](leftOperand, rightOperand).ToString(CultureInfo.InvariantCulture);
+            this._expression.RemoveAt(position - 1);
+            this._expression.RemoveAt(position);
         }
 
         public abstract void Run();
@@ -107,7 +107,13 @@ namespace Calculator.CalculationProcessor
                 else if (availableOperators.Contains(expression[i]))
                 {
                     signsCount++;
+
+                    if (i <= expression.Count - 2 && availableOperators.Contains(expression[i + 1]) && expression[i + 1] != availableOperators[3])
+                    {
+                        return false;
+                    }
                 }
+                
             }
 
             if (numbersCount == 2 && signsCount > 0 && signsCount <= 3)

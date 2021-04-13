@@ -5,7 +5,7 @@ using Calculator.Parser;
 
 namespace Calculator.Commands
 {
-    public class GetUserCalculatorTypeCommand : ICommand, IGetTypeCommand
+    public class CalculatorTypeCommand : ICommand, ICalculatorTypeCommand
     {
         public CalculatorRealization CalculatorType { get; private set; }
         private string _pathToFile;
@@ -16,7 +16,7 @@ namespace Calculator.Commands
         private ConsoleKey _keyToCancelOperation = ConsoleKey.Escape;
 
 
-        public GetUserCalculatorTypeCommand(IUserInteraction interaction, string pathToFile)
+        public CalculatorTypeCommand(IUserInteraction interaction, string pathToFile)
         {
             this._interaction = interaction;
             this._pathToFile = pathToFile;

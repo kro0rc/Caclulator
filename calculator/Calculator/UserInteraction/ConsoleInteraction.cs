@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Calculator.UserInteraction
 {
@@ -15,37 +14,19 @@ namespace Calculator.UserInteraction
 
         public ConsoleKey GetUserKey(string message)
         {
+            List<ConsoleKey> availableKeys = new List<ConsoleKey>() { ConsoleKey.C, ConsoleKey.F, ConsoleKey.Escape };
             ShowResponse(message);
 
-            var input = Console.ReadKey();
+            var userInput = Console.ReadKey();
+            Console.Clear();
 
-            switch (input.Key)
+            if(availableKeys.Contains(userInput.Key))
             {
-                case ConsoleKey.C:
-                    Console.Clear();
-                    return ConsoleKey.C;
-
-                case ConsoleKey.F:
-                    Console.Clear();
-                    return ConsoleKey.F;
-
-                case ConsoleKey.R:
-                    Console.Clear();
-                    return ConsoleKey.R;
-
-                case ConsoleKey.Escape:
-                    Console.Clear();
-                    return ConsoleKey.Escape;
-
-                default:
-                    Console.Clear();
-                    ShowResponse(MessagesTemplates.WarnIncorrectInput);
-                    break;
+                return userInput.Key;
             }
 
             return GetUserKey(message);
         }
-
 
         public void ShowResponse(string message)
         {

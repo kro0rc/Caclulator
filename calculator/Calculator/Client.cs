@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Calculator.UserInteraction;
+﻿using Calculator.UserInteraction;
 using Calculator.CalculationProcessor;
-using Calculator.Parser;
 using Calculator.Commands;
-using Calculator.FileProcessor;
-using System.Globalization;
 
 namespace Calculator
 {
@@ -23,15 +18,11 @@ namespace Calculator
 
         public void Init()
         {
-            SetCalcuratorType(new GetUserCalculatorTypeCommand(this._interaction, this._pathToFile));
-            
-            if(this._calculatorMode != null)
-            {
-                this._calculatorMode.Run();
-            }
+            SetCalcuratorType(new CalculatorTypeCommand(this._interaction, this._pathToFile));
+            this._calculatorMode?.Run();
         }
 
-        private void SetCalcuratorType(GetUserCalculatorTypeCommand command)
+        private void SetCalcuratorType(CalculatorTypeCommand command)
         {
             command.Execute();
             this._calculatorMode = command.CalculatorType;

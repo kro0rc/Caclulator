@@ -27,8 +27,9 @@ namespace Calculator.Parser
         {
             bool formatIsChecked = CheckFormat(expression);
             bool bracketsAreChecked = CheckBrackets(expression);
+            bool operatorsOrderIsChecked = CheckOperatorsOrder(expression);
 
-            if (formatIsChecked && bracketsAreChecked)
+            if (formatIsChecked && bracketsAreChecked && operatorsOrderIsChecked)
             {
                 return true;
             }
@@ -51,15 +52,40 @@ namespace Calculator.Parser
             return this.RemoveBracketsBeforeParsing(expressionPart);
         }
 
+        public int GetNestingLevel(string expression)
+        {
+            return CountNestingLevel(expression);
+        }
+
+        protected virtual bool CheckBrackets(string expression)
+        {
+            return true;
+        }
+
+        protected virtual int CountNestingLevel(string expression)
+        {
+            return 0;
+        }
+
+        protected virtual int[] GetExpressionPartPosition(string expression, int currentNestingLevel)
+        {
+            return new int[] { };
+        }
+
+        protected virtual string RemoveBracketsBeforeParsing(string expressionPart)
+        {
+            return expressionPart;
+        }
+
         private List<string> ParseSimpleExpression(string expression)
         {
-            
-            List <string> expressionParts = new List<string>();
+
+            List<string> expressionParts = new List<string>();
             string modifyedExpression = expression.Replace(" ", "");
 
             while (modifyedExpression.Length != 0)
             {
-                Match numberWithDot = this._numberWithDot.Match(modifyedExpression); 
+                Match numberWithDot = this._numberWithDot.Match(modifyedExpression);
                 Match sign = this._operatorFinder.Match(modifyedExpression);
 
                 if (numberWithDot.Success)
@@ -76,11 +102,6 @@ namespace Calculator.Parser
             }
 
             return expressionParts;
-        }
-
-        public int GetNestingLevel(string expression)
-        {
-            return CountNestingLevel(expression);
         }
 
         private bool CheckFormat(string expression)
@@ -114,24 +135,35 @@ namespace Calculator.Parser
             return true;
         }
 
-        protected virtual bool CheckBrackets(string expression)
+        private bool CheckOperatorsOrder(string expression)
         {
+            int maxOperatorsSequencelength = 2;
+            int currentOperatorsSequenceLength = 0;
+            List<char> availableOperators = new List<char>() { '-', '+', '*', '/' };
+
+            for (int i = 0; i < expression.Length; i++)
+            {
+                if (availableOperators.Contains(expression[i]))
+                {
+                    currentOperatorsSequenceLength = currentOperatorsSequenceLength + 1;
+
+                    if (currentOperatorsSequenceLength > maxOperatorsSequencelength)
+                    {
+                        return false;
+                    }
+
+                    if (i <= expression.Length - 2 && expression[i + 1] != availableOperators[0])
+                    {
+                        return false;
+                    }
+                }
+
+                currentOperatorsSequenceLength = 0;
+
+            }
+
             return true;
         }
 
-        protected virtual int CountNestingLevel(string expression)
-        {
-            return 0;
-        }
-
-        protected virtual int[] GetExpressionPartPosition(string expression, int currentNestingLevel)
-        {
-            return new int[] { };
-        }
-
-        protected virtual string RemoveBracketsBeforeParsing(string expressionPart)
-        {
-            return expressionPart;
-        }
     }
 }

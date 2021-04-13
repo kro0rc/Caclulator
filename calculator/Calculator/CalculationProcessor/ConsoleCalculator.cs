@@ -8,6 +8,7 @@ namespace Calculator.CalculationProcessor
 {
     class ConsoleCalculator : CalculatorRealization
     {
+        private string _keyToExit = "exit";
         private IUserInteraction _userInteraction;
         private ExpressionParser _parser;
 
@@ -19,38 +20,30 @@ namespace Calculator.CalculationProcessor
 
         public override void Run()
         {
-            string userInput = GetUserExpression(new GetUserInputCommand(this._userInteraction));
-            bool expressionHasCorrectFormat = this._parser.CheckExpressionBeforeParsing(userInput);
-
-            if (expressionHasCorrectFormat)
-            {
-                List<string> parsedExpression = this._parser.ParseExpression(userInput);
-                bool parsedExpressionIsValid = CheckParsedExpression(parsedExpression);
-
-                if (parsedExpressionIsValid)
+            string userInput = GetUserExpression(new UserInputCommand(this._userInteraction));
+            
+            if (userInput != this._keyToExit)
+            {                
+                if (this._parser.CheckExpressionBeforeParsing(userInput))
                 {
-                    double result = base.SimpleCalculating(parsedExpression);
-                    base.ShowResponse(new ShowResponseCommand(this._userInteraction, result.ToString()));
-                }
-                else
-                {
-                    base.ShowResponse(new ShowResponseCommand(this._userInteraction, MessagesTemplates.WarnIncorrectInput));
-                }
-            }
+                    List<string> parsedExpression = this._parser.ParseExpression(userInput);
 
-            else if (!expressionHasCorrectFormat && userInput == "exit")
-            {
-                base.ShowResponse(new ShowResponseCommand(this._userInteraction, MessagesTemplates.ByeMessage));
-            }
+                    if (CheckParsedExpression(parsedExpression))
+                    {
+                        double result = base.SimpleCalculating(parsedExpression);
+                        base.ShowResponse(new ResponseCommand(this._userInteraction, result.ToString()));
+                        Run();
+                    }
 
-            else if(!expressionHasCorrectFormat)
-            {
-                base.ShowResponse(new ShowResponseCommand(this._userInteraction, MessagesTemplates.WarnIncorrectInput));
+                    base.ShowResponse(new ResponseCommand(this._userInteraction, MessagesTemplates.WarnIncorrectInput));
+                }
+
+                base.ShowResponse(new ResponseCommand(this._userInteraction, MessagesTemplates.WarnIncorrectInput));
                 Run();
             }
         }
 
-        private string GetUserExpression(GetUserInputCommand command)
+        private string GetUserExpression(UserInputCommand command)
         {
             command.Execute();
 
