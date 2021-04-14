@@ -25,7 +25,7 @@ namespace Calculator.FileProcessor
 
             if (fileExtention != ".txt")
             {
-                throw new FileFormatException();
+                throw new FileFormatException("Wrong file format! Must be .txt");
             }
 
             string[] lines = File.ReadAllLines(path);

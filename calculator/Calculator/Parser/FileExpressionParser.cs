@@ -9,6 +9,7 @@ namespace Calculator.Parser
         private int _nestingLevel;
         private char _openingBracket = '(';
         private char _closingBracket = ')';
+        
         protected override bool IsBracketsCorrect(string expression)
         {
             byte openingBracketsCount = 0;

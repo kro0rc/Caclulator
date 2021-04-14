@@ -39,14 +39,14 @@ namespace Calculator.Parser
             return this.GetExpressionPartPosition(expression, currentNestingLevel);
         }
 
-        public string PrepareExpressionPart(string expressionPart)
-        {
-            return this.RemoveBracketsBeforeParsing(expressionPart);
-        }
-
         public int GetNestingLevel(string expression)
         {
             return CountNestingLevel(expression);
+        }
+
+        public string PrepareExpressionPart(string expressionPart)
+        {
+            return this.RemoveBracketsBeforeParsing(expressionPart);
         }
 
         protected virtual bool IsBracketsCorrect(string expression)
@@ -56,7 +56,7 @@ namespace Calculator.Parser
 
         protected virtual int CountNestingLevel(string expression)
         {
-            return 0;
+            throw new NotImplementedException();
         }
 
         protected virtual int[] GetExpressionPartPosition(string expression, int currentNestingLevel)
@@ -66,7 +66,7 @@ namespace Calculator.Parser
 
         protected virtual string RemoveBracketsBeforeParsing(string expressionPart)
         {
-            return expressionPart;
+            throw new NotImplementedException();
         }
 
         private List<string> ParseSimpleExpression(string expression)
