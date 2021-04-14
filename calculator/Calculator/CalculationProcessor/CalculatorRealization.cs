@@ -22,6 +22,8 @@ namespace Calculator.CalculationProcessor
             { "*", (x, y) => x * y },
             { "/", (x, y) => x / y },
         };
+        protected bool _isPriorOperationsCalculated;
+        protected bool _isSecondaryOperationsCalculated;
         private readonly string[,] _operators = new string[,] { { "*", "/" }, { "+", "-" } };
         private List<string> _expression;
 
@@ -30,28 +32,82 @@ namespace Calculator.CalculationProcessor
         protected double SimpleCalculating(List<string> list)
         {
             this.CalculatingResult = 0;
+            bool calculated = false;
             this._expression = list;
+            this._isPriorOperationsCalculated = false;
+            this._isSecondaryOperationsCalculated = false;
 
-            for(int i = 0; i < this._operators.GetLength(0); i++)
+            while (!calculated)
             {
-                string[] tempOperators = new string[2];
-
-                for(int k = 0; k < this._operators.GetLength(1); k++)
+                if(!this._isPriorOperationsCalculated)
                 {
-                    tempOperators[k] = this._operators[i, k];
+                    FirstPriorityCalculation();
                 }
-
-                GetExpressionPart(tempOperators);
-            }
-
-            if (this._expression.Count == 1)
-            {
-                Double.TryParse(this._expression[0], NumberStyles.Number, CultureInfo.InvariantCulture, out double res);
-                this.CalculatingResult = res;
+                else if(this._isPriorOperationsCalculated && !this._isSecondaryOperationsCalculated)
+                {
+                    SecondPriorityCalculation();
+                }
+                else if (this._expression.Count == 1)
+                {
+                    calculated = true;
+                    Double.TryParse(this._expression[0], NumberStyles.Number, CultureInfo.InvariantCulture, out double res);
+                    this.CalculatingResult = res;
+                }
             }
 
             return this.CalculatingResult;
         }
+
+        private void FirstPriorityCalculation()
+        {
+            if (this._expression.Contains("*") || this._expression.Contains("/"))
+            {
+                for (int i = 0; i < this._expression.Count; i++)
+                {
+                    if (this._expression[i] == "*")
+                    {
+                        PerformOperation(this._expression[i], i);
+                        i = 0;
+
+                    }
+                    else if (this._expression[i] == "/")
+                    {
+                        PerformOperation(this._expression[i], i);
+                        i = 0;
+                    }
+                }
+            }
+            else
+            {
+                this._isPriorOperationsCalculated = true;
+            }
+        }
+
+        private void SecondPriorityCalculation()
+        {
+            if (this._expression.Contains("-") || this._expression.Contains("+"))
+            {
+                for (int i = 0; i < this._expression.Count; i++)
+                {
+                    if (this._expression[i] == "-")
+                    {
+                        PerformOperation(this._expression[i], i);
+                        i = 0;
+                    }
+                    else if (this._expression[i] == "+")
+                    {
+                        PerformOperation(this._expression[i], i);
+                        i = 0;
+                    }
+                }
+            }
+            else
+            {
+                this._isSecondaryOperationsCalculated = true;
+            }
+        }
+
+
 
         protected void PerformOperation(string operation, int position)
         {
@@ -97,28 +153,12 @@ namespace Calculator.CalculationProcessor
                 
             }
 
-            if (numbersCount >= 2 && signsCount > 0 && signsCount <= 3)
+            if (numbersCount >= 2 && signsCount > 0 && signsCount <= numbersCount - 1)
             {
                 return true;
             }
 
             return false;
-        }
-
-        private void GetExpressionPart(string[] operatorSigns)
-        {
-            for(int i = 0; i < this._expression.Count; i++)
-            {
-                for(int k = 0; k < operatorSigns.Length; k++)
-                {
-                    if (this._expression[i] == operatorSigns[k])
-                    {
-                        PerformOperation(this._expression[i], i);
-                        i = 0;
-                        k = 0;
-                    }
-                }
-            }
         }
     }
 }
