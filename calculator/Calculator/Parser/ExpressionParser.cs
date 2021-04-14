@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 using System.Globalization;
 
 namespace Calculator.Parser
@@ -8,33 +9,24 @@ namespace Calculator.Parser
     public abstract class ExpressionParser
     {
         public bool correctStringFormat { get; private set; }
-        protected string _numberWithDotRegex = @"^\-?\d+(\.\d{0,})?";
-        protected string _operatorRegex = @"^[-+*/]";
-        protected Regex _numberWithDot;
-        protected Regex _numberWithComma;
-        protected Regex _operatorFinder;
-        private int _minExpressionLength = 3;
-        private List<string> _availableOperators;
+        protected const string _numberWithDotRegex = @"^\-?\d+(\.\d{0,})?";
+        protected const string _operatorRegex = @"^[-+*/]";
+        protected readonly Regex _numberWithDot;
+        protected readonly Regex _numberWithComma;
+        protected readonly Regex _operatorFinder;
+        private const int _minExpressionLength = 3;
+        private readonly List<string> _availableOperators;
 
         public ExpressionParser()
         {
-            this._numberWithDot = new Regex(this._numberWithDotRegex);
-            this._operatorFinder = new Regex(this._operatorRegex);
+            this._numberWithDot = new Regex(_numberWithDotRegex);
+            this._operatorFinder = new Regex(_operatorRegex);
             this._availableOperators = new List<string>() { "-", "+", "*", "/" };
         }
 
         public bool CheckExpressionBeforeParsing(string expression)
         {
-            bool formatIsChecked = CheckFormat(expression);
-            bool bracketsAreChecked = CheckBrackets(expression);
-            bool operatorsOrderIsChecked = CheckOperatorsOrder(expression);
-
-            if (formatIsChecked && bracketsAreChecked && operatorsOrderIsChecked)
-            {
-                return true;
-            }
-
-            return false;
+            return (IsFormatCorrect(expression) && IsBracketsCorrect(expression) && IsOperatorOrderCorrect(expression));
         }
 
         public List<string> ParseExpression(string expression)
@@ -57,7 +49,7 @@ namespace Calculator.Parser
             return CountNestingLevel(expression);
         }
 
-        protected virtual bool CheckBrackets(string expression)
+        protected virtual bool IsBracketsCorrect(string expression)
         {
             return true;
         }
@@ -85,28 +77,46 @@ namespace Calculator.Parser
 
             while (modifyedExpression.Length != 0)
             {
-                Match numberWithDot = this._numberWithDot.Match(modifyedExpression);
+                Match number = this._numberWithDot.Match(modifyedExpression);
                 Match sign = this._operatorFinder.Match(modifyedExpression);
 
-                if (numberWithDot.Success)
+                if(number.Success && sign.Success)
                 {
-                    expressionParts.Add(numberWithDot.Value);
-                    modifyedExpression = modifyedExpression.Remove(0, numberWithDot.Value.Length);
-                }
+                    Match tempSign = this._operatorFinder.Match(expressionParts.LastOrDefault());
 
-                else if (!numberWithDot.Success && sign.Success)
+                    if (tempSign.Success || expressionParts.Count == 0)
+                    {
+                        expressionParts.Add(number.Value);
+                        modifyedExpression = modifyedExpression.Remove(0, number.Value.Length);
+                    }
+                    else
+                    {
+                        expressionParts.Add(sign.Value);
+                        modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
+                    }
+                }
+                else
                 {
-                    expressionParts.Add(sign.Value);
-                    modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
+                    if (number.Success)
+                    {
+                        expressionParts.Add(number.Value);
+                        modifyedExpression = modifyedExpression.Remove(0, number.Value.Length);
+                    }
+
+                    else if (!number.Success && sign.Success)
+                    {
+                        expressionParts.Add(sign.Value);
+                        modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
+                    }
                 }
             }
 
             return expressionParts;
         }
 
-        private bool CheckFormat(string expression)
+        private bool IsFormatCorrect(string expression)
         {
-            if (expression.Length < this._minExpressionLength || String.IsNullOrWhiteSpace(expression))
+            if (expression.Length < _minExpressionLength || String.IsNullOrWhiteSpace(expression))
             {
                 return false;
             }
@@ -135,7 +145,7 @@ namespace Calculator.Parser
             return true;
         }
 
-        private bool CheckOperatorsOrder(string expression)
+        private bool IsOperatorOrderCorrect(string expression)
         {
             int maxOperatorsSequencelength = 2;
             int currentOperatorsSequenceLength = 0;
@@ -152,7 +162,7 @@ namespace Calculator.Parser
                         return false;
                     }
 
-                    if (i <= expression.Length - 2 && expression[i + 1] != availableOperators[0])
+                    if (i <= expression.Length - 2 && availableOperators.Contains(expression[i + 1]) && expression[i + 1] != availableOperators[0])
                     {
                         return false;
                     }

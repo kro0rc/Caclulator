@@ -6,7 +6,7 @@ namespace Calculator.Commands
     public class UserInputCommand : ICommand, IDataComand
     {
         public string UserInput { get; private set; }
-        private IUserInteraction _interaction;
+        private readonly IUserInteraction _interaction;
 
         public UserInputCommand(IUserInteraction interaction)
         {

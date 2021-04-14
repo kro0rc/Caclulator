@@ -5,7 +5,7 @@ namespace Calculator.Parser
 {
     public class ConsoleParser : ExpressionParser
     {
-        protected override bool CheckBrackets(string expression)
+        protected override bool IsBracketsCorrect(string expression)
         {
             List<char> availableBrackets = new List<char>() { '(', ')' };
 

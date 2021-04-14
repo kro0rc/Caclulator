@@ -8,12 +8,11 @@ namespace Calculator.Commands
     public class CalculatorTypeCommand : ICommand, ICalculatorTypeCommand
     {
         public CalculatorRealization CalculatorType { get; private set; }
-        private string _pathToFile;
-        private IUserInteraction _interaction;
+        private readonly string _pathToFile;
+        private readonly IUserInteraction _interaction;
         private ConsoleKey _userKey;
-        private ConsoleKey _keyToConsoleCalculator = ConsoleKey.C;
-        private ConsoleKey _keyToFileCalculator = ConsoleKey.F;
-        private ConsoleKey _keyToCancelOperation = ConsoleKey.Escape;
+        private readonly ConsoleKey _keyToConsoleCalculator = ConsoleKey.C;
+        private readonly ConsoleKey _keyToFileCalculator = ConsoleKey.F;
 
 
         public CalculatorTypeCommand(IUserInteraction interaction, string pathToFile)

@@ -8,9 +8,7 @@ namespace Calculator.CalculationProcessor
 {
     class ConsoleCalculator : CalculatorRealization
     {
-        private string _keyToExit = "exit";
-        private IUserInteraction _userInteraction;
-        private ExpressionParser _parser;
+        private const string _keyToExit = "exit";
 
         public ConsoleCalculator()
         {
@@ -22,7 +20,7 @@ namespace Calculator.CalculationProcessor
         {
             string userInput = GetUserExpression(new UserInputCommand(this._userInteraction));
             
-            if (userInput != this._keyToExit)
+            if (userInput != _keyToExit)
             {                
                 if (this._parser.CheckExpressionBeforeParsing(userInput))
                 {

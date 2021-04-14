@@ -6,7 +6,7 @@ namespace Calculator.Commands
     class UserPathCommand : ICommand, IDataComand
     {
         public string UserInput { get; private set; }
-        private IUserInteraction _interaction;
+        private readonly IUserInteraction _interaction;
 
         public UserPathCommand(IUserInteraction interaction)
         {

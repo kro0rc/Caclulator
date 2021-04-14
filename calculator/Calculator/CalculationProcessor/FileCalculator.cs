@@ -12,11 +12,8 @@ namespace Calculator.CalculationProcessor
     class FileCalculator : CalculatorRealization
     {
         private string _pathToFile;
-        private string _signOfAssignment = " = ";
-        private string _mistake = " = error in expression";
-        private IUserInteraction _userInteraction;
-        private ExpressionParser _parser;
-        private IFileHandler _fileHandler;
+        private const string _signOfAssignment = " = ";
+        private const string _mistake = " = error in expression";
 
         public FileCalculator(string pathToFile)
         {
@@ -56,11 +53,11 @@ namespace Calculator.CalculationProcessor
                             if (parsedExpressionIsValid)
                             {
                                 double result = base.SimpleCalculating(parsedExpression);
-                                expressions[i] = expressions[i] + this._signOfAssignment + result.ToString(CultureInfo.InvariantCulture);
+                                expressions[i] = expressions[i] + _signOfAssignment + result.ToString(CultureInfo.InvariantCulture);
                             }
                             else
                             {
-                                expressions[i] = expressions[i] + this._mistake;
+                                expressions[i] = expressions[i] + _mistake;
                             }
                         }
                         else
@@ -71,7 +68,7 @@ namespace Calculator.CalculationProcessor
                 }
                 else if (!expressionHasCorrectFormat)
                 {
-                    expressions[i] = expressions[i] + this._mistake;
+                    expressions[i] = expressions[i] + _mistake;
                 }
             }
 

@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Calculator.UserInteraction;
 using Calculator.Commands;
+using Calculator.Parser;
+using Calculator.FileProcessor;
+
 
 namespace Calculator.CalculationProcessor
 {
     public abstract class CalculatorRealization
     {
         public double CalculatingResult { get; private set; }
-        private List<string> _expression;
+        protected IUserInteraction _userInteraction;
+        protected ExpressionParser _parser;
+        protected IFileHandler _fileHandler;
         protected Dictionary<string, Func<double, double, double>> _operations = new Dictionary<string, Func<double, double, double>>
         {
             { "+", (x, y) => x + y },
@@ -16,55 +22,32 @@ namespace Calculator.CalculationProcessor
             { "*", (x, y) => x * y },
             { "/", (x, y) => x / y },
         };
+        private readonly string[,] _operators = new string[,] { { "*", "/" }, { "+", "-" } };
+        private List<string> _expression;
+
+        public abstract void Run();
 
         protected double SimpleCalculating(List<string> list)
         {
             this.CalculatingResult = 0;
-            bool calculated = false;
             this._expression = list;
-            
 
-            while (!calculated)
+            for(int i = 0; i < this._operators.GetLength(0); i++)
             {
-                if (this._expression.Contains("*") || this._expression.Contains("/"))
-                {
-                    for (int i = 0; i < this._expression.Count; i++)
-                    {
-                        if (this._expression[i] == "*")
-                        {
-                            PerformOperation(this._expression[i], i);
-                            i = 0;
+                string[] tempOperators = new string[2];
 
-                        }
-                        else if (this._expression[i] == "/")
-                        {
-                            PerformOperation(this._expression[i], i);
-                            i = 0;
-                        }
-                    }
+                for(int k = 0; k < this._operators.GetLength(1); k++)
+                {
+                    tempOperators[k] = this._operators[i, k];
                 }
 
-                if (this._expression.Contains("-") || this._expression.Contains("+"))
-                {
-                    for (int i = 0; i < this._expression.Count; i++)
-                    {
-                        if (this._expression[i] == "-")
-                        {
-                            PerformOperation(this._expression[i], i);
-                        }
-                        else if (this._expression[i] == "+")
-                        {
-                            PerformOperation(this._expression[i], i);
-                        }
-                    }
-                }
+                GetExpressionPart(tempOperators);
+            }
 
-                if (this._expression.Count == 1)
-                {
-                    calculated = true;
-                    Double.TryParse(this._expression[0], NumberStyles.Number, CultureInfo.InvariantCulture, out double res);
-                    this.CalculatingResult = res;
-                }
+            if (this._expression.Count == 1)
+            {
+                Double.TryParse(this._expression[0], NumberStyles.Number, CultureInfo.InvariantCulture, out double res);
+                this.CalculatingResult = res;
             }
 
             return this.CalculatingResult;
@@ -84,8 +67,6 @@ namespace Calculator.CalculationProcessor
             this._expression.RemoveAt(position - 1);
             this._expression.RemoveAt(position);
         }
-
-        public abstract void Run();
 
         protected void ShowResponse(ICommand command) 
         {
@@ -116,12 +97,28 @@ namespace Calculator.CalculationProcessor
                 
             }
 
-            if (numbersCount == 2 && signsCount > 0 && signsCount <= 3)
+            if (numbersCount >= 2 && signsCount > 0 && signsCount <= 3)
             {
                 return true;
             }
 
             return false;
+        }
+
+        private void GetExpressionPart(string[] operatorSigns)
+        {
+            for(int i = 0; i < this._expression.Count; i++)
+            {
+                for(int k = 0; k < operatorSigns.Length; k++)
+                {
+                    if (this._expression[i] == operatorSigns[k])
+                    {
+                        PerformOperation(this._expression[i], i);
+                        i = 0;
+                        k = 0;
+                    }
+                }
+            }
         }
     }
 }

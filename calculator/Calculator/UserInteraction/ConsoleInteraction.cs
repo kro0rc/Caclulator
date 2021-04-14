@@ -5,6 +5,7 @@ namespace Calculator.UserInteraction
 {
     public class ConsoleInteraction : IUserInteraction
     {
+        private readonly ConsoleKey[] _availableKeys = new ConsoleKey[] { ConsoleKey.C, ConsoleKey.F, ConsoleKey.Escape };
         
         public string GetUserInput(string message)
         {
@@ -14,15 +15,17 @@ namespace Calculator.UserInteraction
 
         public ConsoleKey GetUserKey(string message)
         {
-            List<ConsoleKey> availableKeys = new List<ConsoleKey>() { ConsoleKey.C, ConsoleKey.F, ConsoleKey.Escape };
             ShowResponse(message);
 
             var userInput = Console.ReadKey();
             Console.Clear();
 
-            if(availableKeys.Contains(userInput.Key))
+            for (int i = 0; i < this._availableKeys.Length; i++)
             {
-                return userInput.Key;
+                if(userInput.Key == this._availableKeys[i])
+                {
+                    return userInput.Key;
+                }
             }
 
             return GetUserKey(message);
