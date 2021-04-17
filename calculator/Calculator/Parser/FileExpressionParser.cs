@@ -4,41 +4,49 @@ using System.Text.RegularExpressions;
 
 namespace Calculator.Parser
 {
-    class FileExpressionParser : ExpressionParser
+    public class FileExpressionParser : ExpressionParser
     {
-        private int _nestingLevel;
+        private int[] _bracketsCount;
         private char _openingBracket = '(';
         private char _closingBracket = ')';
         
         protected override bool IsBracketsCorrect(string expression)
-        {
-            byte openingBracketsCount = 0;
-            byte closingBracketsCount = 0;
+        { 
+            this._bracketsCount = CountBrackets(expression);
+            bool bracketsArePresent = this._bracketsCount[0] > 0 && this._bracketsCount[1] > 0;
+            bool bracketsCountIsEqual = this._bracketsCount[0] == this._bracketsCount[1];
+            int lastOpeningBracketPosition = 0;
+            int firstClosingBracketPosition = 0;
 
-            for (int i = 0; i < expression.Length; i++)
+            if(bracketsArePresent)
             {
-                if(expression[i] == this._openingBracket)
+                for (int i = 0; i < expression.Length; i++)
                 {
-                    openingBracketsCount++;
+                    if (expression[i] == this._openingBracket)
+                    {
+                        lastOpeningBracketPosition = i;
+                    }
+                    else if (expression[i] == this._closingBracket && firstClosingBracketPosition == 0)
+                    {
+                        firstClosingBracketPosition = i;
+                    }
                 }
-                else if(expression[i] == this._closingBracket)
-                {
-                    closingBracketsCount++;
-                }
-            }
 
-            if (openingBracketsCount == closingBracketsCount)
-            {
-                this._nestingLevel = openingBracketsCount;
+                if(firstClosingBracketPosition - lastOpeningBracketPosition < 4 || !bracketsCountIsEqual)
+                {
+                    return false;
+                }
+
                 return true;
             }
 
-            return false;
+            return true;
         }
 
         protected override int CountNestingLevel(string expression)
         {
-            return this._nestingLevel;
+            int[] actualBracketsCount = CountBrackets(expression);
+            return actualBracketsCount[0];
         }
 
         protected override int[] GetExpressionPartPosition(string expression, int currentNestingLevel)
@@ -96,13 +104,26 @@ namespace Calculator.Parser
 
             return cleanedExpressionPart;
         }
+        
+        private int[] CountBrackets(string expression)
+        {
+            byte openingBracketsCount = 0;
+            byte closingBracketsCount = 0;
 
+            for (int i = 0; i < expression.Length; i++)
+            {
+                if (expression[i] == this._openingBracket)
+                {
+                    openingBracketsCount++;
+                }
 
+                else if (expression[i] == this._closingBracket)
+                {
+                    closingBracketsCount++;
+                }
+            }
 
-
-
-
-
-
+            return new int[] { openingBracketsCount, closingBracketsCount };
+        }
     }
 }

@@ -44,14 +44,14 @@ namespace Calculator.Parser
             return CountNestingLevel(expression);
         }
 
-        public string PrepareExpressionPart(string expressionPart)
+        internal string PrepareExpressionPart(string expressionPart)
         {
             return this.RemoveBracketsBeforeParsing(expressionPart);
         }
 
         protected virtual bool IsBracketsCorrect(string expression)
         {
-            return true;
+            throw new NotImplementedException();
         }
 
         protected virtual int CountNestingLevel(string expression)
@@ -61,7 +61,7 @@ namespace Calculator.Parser
 
         protected virtual int[] GetExpressionPartPosition(string expression, int currentNestingLevel)
         {
-            return new int[] { };
+            throw new NotImplementedException();
         }
 
         protected virtual string RemoveBracketsBeforeParsing(string expressionPart)
@@ -80,9 +80,9 @@ namespace Calculator.Parser
                 Match number = this._numberWithDot.Match(modifyedExpression);
                 Match sign = this._operatorFinder.Match(modifyedExpression);
 
-                if(number.Success && sign.Success)
+                if(number.Success && sign.Success && expressionParts.Count > 0)
                 {
-                    Match tempSign = this._operatorFinder.Match(expressionParts.LastOrDefault());
+                    Match tempSign = this._operatorFinder.Match(expressionParts?.LastOrDefault());
 
                     if (tempSign.Success || expressionParts.Count == 0)
                     {
@@ -150,6 +150,21 @@ namespace Calculator.Parser
             int maxOperatorsSequencelength = 2;
             int currentOperatorsSequenceLength = 0;
             List<char> availableOperators = new List<char>() { '-', '+', '*', '/' };
+
+            if (availableOperators.Contains(expression[0]) && expression[0] != availableOperators[0])
+            {
+                return false;
+            }
+
+            if (availableOperators.Contains(expression[0]) && availableOperators.Contains(expression[1]))
+            {
+                return false;
+            }
+
+            if (availableOperators.Contains(expression[expression.Length - 1]))
+            {
+                return false;
+            }
 
             for (int i = 0; i < expression.Length; i++)
             {
