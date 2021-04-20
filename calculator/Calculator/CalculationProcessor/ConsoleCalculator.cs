@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Calculator.CalculationProcessor
 {
-    class ConsoleCalculator : CalculatorRealization
+    public class ConsoleCalculator : CalculatorRealization
     {
         private const string _keyToExit = "exit";
 

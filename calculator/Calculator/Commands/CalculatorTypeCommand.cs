@@ -14,13 +14,11 @@ namespace Calculator.Commands
         private readonly ConsoleKey _keyToConsoleCalculator = ConsoleKey.C;
         private readonly ConsoleKey _keyToFileCalculator = ConsoleKey.F;
 
-
         public CalculatorTypeCommand(IUserInteraction interaction, string pathToFile)
         {
             this._interaction = interaction;
             this._pathToFile = pathToFile;
         }
-
 
         public void Execute()
         {

@@ -1,17 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Calculator.FileProcessor;
 using Calculator.CalculationProcessor;
+using System.IO;
 
 namespace Calculator_Tests.CalculatorProcessorTests
 {
     [TestClass]
     public class FileCalculatorTests
     {
-        [TestMethod]
-        public void RunCalculator()
-        {
-        }
+
     }
 }

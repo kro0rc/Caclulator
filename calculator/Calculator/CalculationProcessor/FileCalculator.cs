@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Calculator.UserInteraction;
@@ -9,7 +9,7 @@ using Calculator.FileProcessor;
 
 namespace Calculator.CalculationProcessor
 {
-    class FileCalculator : CalculatorRealization
+    public class FileCalculator : CalculatorRealization
     {
         private string _pathToFile;
         private const string _signOfAssignment = " = ";

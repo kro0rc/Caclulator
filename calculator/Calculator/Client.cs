@@ -7,8 +7,8 @@ namespace Calculator
     public class Client
     {
         private string _pathToFile;
-        private IUserInteraction _interaction;
-        private CalculatorRealization _calculatorMode;
+        public IUserInteraction _interaction { get; private set; }
+        public CalculatorRealization _calculatorMode { get; private set; }
         
         public Client(IUserInteraction interaction, string pathToFile)
         {
