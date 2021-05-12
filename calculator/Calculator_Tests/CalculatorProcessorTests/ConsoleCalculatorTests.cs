@@ -32,7 +32,7 @@ namespace Calculator_Tests.CalculatorProcessorTests
         [DataRow("2+2+2*2", 8)]
         [DataRow("-2+-3+-4*-5--6", 21)]
         [DataRow("15+-5-131", -121)]
-        public void TestMethod(string expression, int expectedResult)
+        public void CalculatorTest_ShouldReturnCorrectAnswer(string expression, int expectedResult)
         {
             interaction.SetupSequence(x => x.GetUserInput(It.IsAny<string>()))
                 .Returns(expression)
