@@ -15,6 +15,7 @@ namespace Calculator.Parser
             this._bracketsCount = CountBrackets(expression);
             bool bracketsArePresent = this._bracketsCount[0] > 0 && this._bracketsCount[1] > 0;
             bool bracketsCountIsEqual = this._bracketsCount[0] == this._bracketsCount[1];
+            bool openingBracketIsFound = false;
             int lastOpeningBracketPosition = 0;
             int firstClosingBracketPosition = 0;
 
@@ -25,14 +26,26 @@ namespace Calculator.Parser
                     if (expression[i] == this._openingBracket)
                     {
                         lastOpeningBracketPosition = i;
+                        openingBracketIsFound = true;
                     }
                     else if (expression[i] == this._closingBracket && firstClosingBracketPosition == 0)
                     {
+                        if (!openingBracketIsFound)
+                        {
+                            return false;
+                        }
+
                         firstClosingBracketPosition = i;
+                    }
+                    else if(expression[i] == this._closingBracket && i < expression.Length - 2 && expression[i + 1] == this._openingBracket)
+                    {
+                        return false;
                     }
                 }
 
-                if(firstClosingBracketPosition - lastOpeningBracketPosition < 4 || !bracketsCountIsEqual)
+                int distanceBeetweenBrackets = firstClosingBracketPosition - lastOpeningBracketPosition;
+
+                if ((Math.Abs(distanceBeetweenBrackets) < 4 && Math.Abs(distanceBeetweenBrackets) != 2) || !bracketsCountIsEqual)
                 {
                     return false;
                 }

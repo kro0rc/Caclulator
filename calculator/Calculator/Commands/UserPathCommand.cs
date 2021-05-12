@@ -3,7 +3,7 @@ using Calculator.UserInteraction;
 
 namespace Calculator.Commands
 {
-    class UserPathCommand : ICommand, IDataComand
+    public class UserPathCommand : ICommand, IDataComand
     {
         public string UserInput { get; private set; }
         private readonly IUserInteraction _interaction;

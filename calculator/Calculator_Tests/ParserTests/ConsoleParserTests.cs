@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Calculator.Parser;
 
 namespace Calculator_Tests.ParserTests
@@ -49,19 +48,19 @@ namespace Calculator_Tests.ParserTests
         }
 
         [DataTestMethod]
-        [DataRow("2+2")]
-        [DataRow("2+2+2")]
-        [DataRow("2+2+2*2")]
-        [DataRow("1.1+2.2/3*-2")]
-        [DataRow("450000*0-2+12*2.3")]
-        [DataRow("-2+-3+-4*-5--6")]
+        [DataRow("2+2", 3)]
+        [DataRow("2+2+2", 5)]
+        [DataRow("2+2+2*2", 7)]
+        [DataRow("1.1+2.2/3*-2", 7)]
+        [DataRow("450000*0-2+12*2.3", 9)]
+        [DataRow("-2+-3+-4*-5--6", 9)]
+        [DataRow("15+-5-131", 5)]
         
-        public void ParseExpressionTest_ReturnsCorrectlyParsedExpression(string expression)
+        public void ParseExpressionTest_ReturnsCorrectlyParsedExpression(string expression, int expectedLength)
         {
             List<string> output = parser.ParseExpression(expression);
-            string convertedOutput = String.Join("", output);
 
-            Assert.AreEqual(expression, convertedOutput);
+            Assert.AreEqual(expectedLength, output.Count);
         }
 
         [TestMethod]

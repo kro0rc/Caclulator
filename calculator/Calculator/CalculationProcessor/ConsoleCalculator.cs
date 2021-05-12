@@ -10,11 +10,12 @@ namespace Calculator.CalculationProcessor
     {
         private const string _keyToExit = "exit";
 
-        public ConsoleCalculator()
+        public ConsoleCalculator(IUserInteraction interaction, ExpressionParser parser)
         {
-            this._userInteraction = new ConsoleInteraction();
-            this._parser = new ConsoleParser();
+            this._userInteraction = interaction;
+            this._parser = parser;
         }
+       
 
         public override void Run()
         {
@@ -39,6 +40,8 @@ namespace Calculator.CalculationProcessor
                 base.ShowResponse(new ResponseCommand(this._userInteraction, MessagesTemplates.WarnIncorrectInput));
                 Run();
             }
+
+            GC.Collect();
         }
 
         private string GetUserExpression(UserInputCommand command)

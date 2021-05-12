@@ -1,16 +1,35 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Calculator.Commands;
+using Calculator.UserInteraction;
+using Moq;
 
 namespace Calculator_Tests.CommandsTests
 {
     [TestClass]
-    class ResponseCommandTests
+    public class ResponseCommandTests
     {
-        [TestMethod]
-        public void TestMethod1()
+        ResponseCommand responseCommand;
+        Mock<IUserInteraction> testInteraction;
+
+        [TestCleanup]
+        public void TestCleanUp()
         {
+            responseCommand = null;
+            testInteraction = null;
+        }
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            testInteraction = new Mock<IUserInteraction>();
+        }
+        [DataTestMethod]
+        [DataRow(MessagesTemplates.WelocmeMessage)]
+        [DataRow(MessagesTemplates.ByeMessage)]
+        public void ResposeCommand_ShouldPassMessageCorrectly(string message)
+        {
+            responseCommand = new ResponseCommand(testInteraction.Object, message);
+            responseCommand.Execute();
+            testInteraction.Verify(x => x.ShowResponse(message), Times.Once);
         }
     }
 }

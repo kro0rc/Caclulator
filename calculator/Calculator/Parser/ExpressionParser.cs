@@ -74,6 +74,7 @@ namespace Calculator.Parser
 
             List<string> expressionParts = new List<string>();
             string modifyedExpression = expression.Replace(" ", "");
+            bool previousMatchIsDigit = false;
 
             while (modifyedExpression.Length != 0)
             {
@@ -84,14 +85,16 @@ namespace Calculator.Parser
                 {
                     Match tempSign = this._operatorFinder.Match(expressionParts?.LastOrDefault());
 
-                    if (tempSign.Success || expressionParts.Count == 0)
+                    if ((tempSign.Success || expressionParts.Count == 0) && previousMatchIsDigit == true)
                     {
                         expressionParts.Add(number.Value);
+                        previousMatchIsDigit = false;
                         modifyedExpression = modifyedExpression.Remove(0, number.Value.Length);
                     }
                     else
                     {
                         expressionParts.Add(sign.Value);
+                        previousMatchIsDigit = true;
                         modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
                     }
                 }
@@ -100,12 +103,14 @@ namespace Calculator.Parser
                     if (number.Success)
                     {
                         expressionParts.Add(number.Value);
+                        previousMatchIsDigit = false;
                         modifyedExpression = modifyedExpression.Remove(0, number.Value.Length);
                     }
 
                     else if (!number.Success && sign.Success)
                     {
                         expressionParts.Add(sign.Value);
+                        previousMatchIsDigit = true;
                         modifyedExpression = modifyedExpression.Remove(0, sign.Value.Length);
                     }
                 }

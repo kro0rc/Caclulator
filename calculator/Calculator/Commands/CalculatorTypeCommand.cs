@@ -33,16 +33,16 @@ namespace Calculator.Commands
 
             if (!String.IsNullOrWhiteSpace(pathToFile))
             {
-                return new FileCalculator(pathToFile);
+                return new FileCalculator(new ConsoleInteraction(), new FileExpressionParser(), pathToFile);
             }
 
             if (this._userKey == this._keyToConsoleCalculator)
             {
-                return new ConsoleCalculator();
+                return new ConsoleCalculator(this._interaction, new ConsoleParser());
             }
             else if (this._userKey == this._keyToFileCalculator)
             {
-                return new FileCalculator(pathToFile);
+                return new FileCalculator(new ConsoleInteraction(), new FileExpressionParser(), pathToFile);
             }
 
             return null;

@@ -15,11 +15,11 @@ namespace Calculator.CalculationProcessor
         private const string _signOfAssignment = " = ";
         private const string _mistake = " = error in expression";
 
-        public FileCalculator(string pathToFile)
+        public FileCalculator(IUserInteraction interaction, ExpressionParser parser, string pathToFile)
         {
             this._pathToFile = pathToFile;
-            this._userInteraction = new ConsoleInteraction();
-            this._parser = new FileExpressionParser();
+            this._userInteraction = interaction;
+            this._parser = parser;
             this._fileHandler = new FileHandler();
         }
 
